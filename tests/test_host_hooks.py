@@ -342,7 +342,6 @@ def test_install_hook_pins_the_agent_path(rig, tmp_path: pathlib.Path) -> None:
     ("pkg", "binary", "identity"),
     [
         ("claude_code", "memu-claude-code", r"hosts/claude-code/bridge\.sh|memU bridging pipeline"),
-        ("codex", "memu-codex", "the pipeline prompt is the load-bearing identity"),
     ],
 )
 def test_hook_install_removes_the_legacy_task_before_installing_the_hook(pkg: str, binary: str, identity: str) -> None:
@@ -363,3 +362,15 @@ def test_hook_install_removes_the_legacy_task_before_installing_the_hook(pkg: st
 
     uninstall = (files(f"memu.hosts.{pkg}") / "UNINSTALL.md").read_text(encoding="utf-8")
     assert f"{binary} remove-hook" in uninstall
+
+
+def test_codex_install_uses_notify_without_a_scheduled_task() -> None:
+    from importlib.resources import files
+
+    doc = (files("memu.hosts.codex") / "INSTALL.md").read_text(encoding="utf-8")
+    normalized = " ".join(doc.replace("**", "").split())
+
+    assert "memu-codex install-hook" in normalized
+    assert "no scheduled task" in normalized
+    assert "Remove a scheduled bridging" not in normalized
+    assert "--dangerously-bypass-approvals-and-sandbox" in normalized

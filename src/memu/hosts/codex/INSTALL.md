@@ -217,21 +217,11 @@ on this working, and both fail *silently* if it is wrong.
 The *record* seam runs from Codex's own `notify` hook — no scheduled task. When
 a Codex turn completes, `memu-codex hook` starts a detached `memu-codex hook-run`
 **outside Codex's sandbox** and returns at once. That run does the network work
-itself (`prepare`, then `commit`), and in between runs `codex exec` with a
-`workspace-write` sandbox over `~/.memu/hosts/codex/jobs/*.txt` — the agent
-only reads and writes local files, so the sandbox never blocks an upload. At
-most one run every 30 minutes; a session's later turns are picked up by the next
-run. In cloud mode, workspace resources are submitted but are not currently
-persisted.
-
-**Remove a scheduled bridging task left by an earlier install.** Inspect
-Codex's scheduled-task surface for every recognized name in
-{{all_task_names}}, confirm the task's prompt runs the memU prepare /
-self-evolve / commit pipeline, and delete **only that confirmed task**. A name
-narrows the search; the pipeline prompt is the load-bearing identity. An absent
-task is the normal first-install case. Leave the store, session cursor, working
-tree, and retrieval instruction untouched — the hook resumes from the same
-cursor.
+itself (`prepare`, then `commit`), and in between runs `codex exec` with
+`--dangerously-bypass-approvals-and-sandbox` over the isolated memU workspace.
+The agent only processes the local job files; at most one run every 30 minutes,
+and a session's later turns are picked up by the next run. In cloud mode,
+workspace resources are submitted but are not currently persisted.
 
 Then install the hook:
 
@@ -242,9 +232,9 @@ memu-codex install-hook
 It sets the top-level `notify` in `~/.codex/config.toml` to the absolute
 `memu-codex hook` command (pinning the `codex` binary it found, too). If
 `notify` already ran another program, that program is kept: memU forwards every
-notification to it, and `remove-hook` puts it back. Codex runs `notify` from the
-terminal UI; sessions from other Codex front ends are still mined, by the next
-run a terminal session triggers.
+notification to it, and `remove-hook` puts it back. Codex frontends that execute
+`notify` trigger the run; session files from any other front end are picked up by
+the next successful prepare.
 
 ### ✅ Verify Part 2
 

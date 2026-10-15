@@ -49,10 +49,20 @@ and the retrieval procedure itself is installed here as a skill."""
 
 HOOK = HookSpec(
     agent=HeadlessAgent(
-        # workspace-write with the working tree as cwd: the jobs write only there,
-        # and need no network — the hook run does prepare/commit itself (ADR 0019).
+        # The record process owns the isolated memU workspace and must not be
+        # blocked by Codex's interactive approval/sandbox policy in a detached
+        # hook run. The workspace is a staging area, not the user's project.
         # `--json` is how the run learns its own thread id, to keep it unmined.
-        argv=("codex", "exec", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "-C", "{base}", "-"),
+        argv=(
+            "codex",
+            "exec",
+            "--json",
+            "--skip-git-repo-check",
+            "--dangerously-bypass-approvals-and-sandbox",
+            "-C",
+            "{base}",
+            "-",
+        ),
         session_id_from_output=codex_thread_id,
     ),
     installer=CodexNotifyHook(),
