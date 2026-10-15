@@ -212,21 +212,18 @@ on this working, and both fail *silently* if it is wrong.
 
 ---
 
-## Part 2 — Install the bridging (record) hook
+## Part 2 — Install the record hook
 
-The *record* seam runs from Codex's own `notify` hook — no scheduled task. When
-a Codex turn completes, `memu-codex hook` starts the bridging run in the
-background and returns at once. It runs at most once every 30 minutes; later
-turns are picked up by the next run. In cloud mode, workspace resources are
-submitted but are not currently persisted.
+Codex's `notify` starts a background memory pass; no scheduled task is installed.
+The hook returns immediately, runs at most once every 30 minutes, and picks up
+later turns on the next pass. In cloud mode, workspace resources are submitted
+but are not currently persisted.
 
 The background agent runs with Codex's approval and sandbox bypass so it can
 write the isolated memU workspace. That workspace is owned by memU and must not
 be a user project directory.
 
-Then install the hook:
-
-Then install the hook:
+Install the hook:
 
 ```
 memu-codex install-hook
@@ -236,8 +233,8 @@ It sets the top-level `notify` in `~/.codex/config.toml` to the absolute
 `memu-codex hook` command (pinning the `codex` binary it found, too). If
 `notify` already ran another program, that program is kept: memU forwards every
 notification to it, and `remove-hook` puts it back. Codex frontends that execute
-`notify` trigger the run; session files from any other front end are picked up by
-the next successful prepare.
+`notify` trigger the memory pass; session files from any other front end are
+picked up by the next successful pass.
 
 ### ✅ Verify Part 2
 
