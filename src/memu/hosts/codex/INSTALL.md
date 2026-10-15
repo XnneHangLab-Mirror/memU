@@ -214,10 +214,10 @@ on this working, and both fail *silently* if it is wrong.
 
 ## Part 2 — Install the record hook
 
-Codex's `notify` starts a background memory pass; no scheduled task is installed.
-The hook returns immediately, runs at most once every 30 minutes, and picks up
-later turns on the next pass. In cloud mode, workspace resources are submitted
-but are not currently persisted.
+Codex's `notify` starts a record run; no scheduled task is installed. The hook
+returns immediately, runs at most once every 30 minutes, and picks up later
+turns on the next run. In cloud mode, workspace resources are submitted but are
+not currently persisted.
 
 The background agent runs with Codex's approval and sandbox bypass so it can
 write the isolated memU workspace. That workspace is owned by memU and must not
@@ -233,8 +233,8 @@ It sets the top-level `notify` in `~/.codex/config.toml` to the absolute
 `memu-codex hook` command (pinning the `codex` binary it found, too). If
 `notify` already ran another program, that program is kept: memU forwards every
 notification to it, and `remove-hook` puts it back. Codex frontends that execute
-`notify` trigger the memory pass; session files from any other front end are
-picked up by the next successful pass.
+`notify` trigger the record run; session files from any other front end are
+picked up by the next successful run.
 
 ### ✅ Verify Part 2
 
