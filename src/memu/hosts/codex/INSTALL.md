@@ -215,13 +215,16 @@ on this working, and both fail *silently* if it is wrong.
 ## Part 2 — Install the bridging (record) hook
 
 The *record* seam runs from Codex's own `notify` hook — no scheduled task. When
-a Codex turn completes, `memu-codex hook` starts a detached `memu-codex hook-run`
-**outside Codex's sandbox** and returns at once. That run does the network work
-itself (`prepare`, then `commit`), and in between runs `codex exec` with
-`--dangerously-bypass-approvals-and-sandbox` over the isolated memU workspace.
-The agent only processes the local job files; at most one run every 30 minutes,
-and a session's later turns are picked up by the next run. In cloud mode,
-workspace resources are submitted but are not currently persisted.
+a Codex turn completes, `memu-codex hook` starts the bridging run in the
+background and returns at once. It runs at most once every 30 minutes; later
+turns are picked up by the next run. In cloud mode, workspace resources are
+submitted but are not currently persisted.
+
+The background agent runs with Codex's approval and sandbox bypass so it can
+write the isolated memU workspace. That workspace is owned by memU and must not
+be a user project directory.
+
+Then install the hook:
 
 Then install the hook:
 
