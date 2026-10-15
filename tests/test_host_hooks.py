@@ -373,4 +373,4 @@ def test_codex_install_uses_notify_without_a_scheduled_task() -> None:
     assert "memu-codex install-hook" in normalized
     assert "no scheduled task" in normalized
     assert "Remove a scheduled bridging" not in normalized
-    assert "--dangerously-bypass-approvals-and-sandbox" in normalized
+    assert "approval and sandbox bypass" in normalized
